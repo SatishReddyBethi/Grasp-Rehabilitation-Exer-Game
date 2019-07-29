@@ -1301,17 +1301,6 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 1596201629}
-        m_MethodName: GetComPort
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1596201629}
         m_MethodName: Save_Statics
         m_Mode: 1
         m_Arguments:
@@ -3504,7 +3493,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -4, y: 2, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: [{fileID: 971472312}]
+  m_Children:
+  - {fileID: 971472312}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4215,8 +4205,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 348.7}
-  m_SizeDelta: {x: 707.4, y: 228.9}
+  m_AnchoredPosition: {x: 0, y: 284.69}
+  m_SizeDelta: {x: 1180.8, y: 273.44}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &543726041
 MonoBehaviour:
@@ -4240,7 +4230,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 85
+    m_FontSize: 64
     m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 10
@@ -4251,9 +4241,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'WELCOME TO GRASP REHABILITATOR
-
-'
+  m_Text: "WELCOME TO \nGRASP REHABILITATOR\n"
 --- !u!222 &543726042
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4356,7 +4344,7 @@ GameObject:
   - component: {fileID: 575063860}
   - component: {fileID: 575063859}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Scan
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4812,7 +4800,7 @@ GameObject:
   - component: {fileID: 596442968}
   - component: {fileID: 596442967}
   m_Layer: 5
-  m_Name: Button (1)
+  m_Name: Initialize
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4883,6 +4871,17 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1596201629}
         m_MethodName: GetComPort
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1596201629}
+        m_MethodName: Save_Statics
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5229,7 +5228,7 @@ PrefabInstance:
     - target: {fileID: 804679050408733812, guid: 82276269c1fdffa4ebb17a25a1827402,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 804679050408733812, guid: 82276269c1fdffa4ebb17a25a1827402,
         type: 3}
@@ -14595,17 +14594,6 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 1596201629}
-        m_MethodName: GetComPort
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1596201629}
         m_MethodName: Save_Statics
         m_Mode: 1
         m_Arguments:
@@ -16064,6 +16052,8 @@ MonoBehaviour:
   debug: 1
   lifting_force: 0
   grasping_force: 0
+  initial_lf: 0
+  start_thing: 0
   portExists: []
   ComPorts: {fileID: 2098191935}
   Hts: 0

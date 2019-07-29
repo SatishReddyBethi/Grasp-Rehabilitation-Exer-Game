@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
     public Text timerText;
     public GameObject timer_;
     public GameObject particle;
-    private ParticleSystem exp;   
+    private ParticleSystem exp; 
     
 
     void Start()
@@ -79,7 +79,7 @@ public class PlayerController : MonoBehaviour
                 }
                               
 
-                if (data.lifting_force < 2 && !InAir)
+                if (data.lifting_force > 0.2 && !InAir)
                 {
                     Thrust = thrust;
                 }
@@ -162,6 +162,7 @@ public class PlayerController : MonoBehaviour
     public void GameStart()
     {
         pause = false;
+        data.start_thing = true;
         rb.gravityScale = 1;
         transform.localScale = new Vector3(.5f, .5f, 0);
         transform.position = new Vector3(-10.0f, 3.0f, 0f);        

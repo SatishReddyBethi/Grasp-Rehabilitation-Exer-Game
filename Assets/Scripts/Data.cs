@@ -17,13 +17,18 @@ public class Data : MonoBehaviour
     public List<int[]> Calibrations = new List<int[]>();
     public float lifting_force;
     public float grasping_force;
+    public float initial_lf;
+    public bool start_thing = false;
+    
     // Use this for initialization
     void Start()
     {
         savedDataPath = Application.persistentDataPath + "/savedData";
         Time.timeScale = 1;
         Scan();
-        GetComPort();        
+        GetComPort();
+        Invoke("Save_Statics", 2.0f);
+        
     }
 
     #region Code Connecting With Arduino
@@ -106,13 +111,14 @@ public class Data : MonoBehaviour
                 if (Line != "")
                 {
                     ParseAngles();
+
                 }
                 ts = Time.realtimeSinceStartup - ts;
                 if (ts > Hts)
                 {
                     Hts = ts;
                 }
-                
+
             }
             else
             {
@@ -134,7 +140,7 @@ public class Data : MonoBehaviour
         if (sp != null && sp.IsOpen)
         {
             try
-            {                
+            {
                 Line = sp.ReadLine();
                 DebugText.text = Line;
                 timeout = 0;
@@ -142,7 +148,7 @@ public class Data : MonoBehaviour
             }
             catch (System.TimeoutException)
             {
-               Line = "";
+                Line = "";
                 timeout = timeout + 1;
                 Verbose_Logging("Receive Data Error. Read Timeout");
             }
@@ -172,19 +178,27 @@ public class Data : MonoBehaviour
                 if (forces[i] == "")
                 {
                     ReadStatus = false;
-                }                
-            }            
+                }
+            }
             if (ReadStatus)
-            {
+            {                          
+
+                
                 try
                 {
                     float TempLF = float.Parse(forces[0]);
                     float TempGF = float.Parse(forces[1]) + float.Parse(forces[2]) / 2;
-
                     if (TempLF < 2.29 && TempLF > 1.78)
                     {
-                        lifting_force = TempLF;;
-                    }
+                        if (!start_thing)
+                        {
+                            initial_lf = TempLF;
+                        }
+                        if (start_thing)
+                        {
+                            lifting_force = initial_lf - TempLF;
+                        }
+                    }                    
 
                     if (TempGF > 0 && TempGF < 26)
                     {
@@ -195,78 +209,81 @@ public class Data : MonoBehaviour
                 {
                     Verbose_Logging("Format Error");
                 }
+
+            }
+
+            else
+            {
+                Debug.Log("Wrong Data: " + Line);
+            }
+            SaveData(grasping_force.ToString("F2") + "," + lifting_force.ToString("F2") + "\n", false);
+        }
+    }
+        #endregion
+
+        #region Buttons
+        string Time_;
+        public void Save_Statics()
+        {
+            start = true;
+            InvokeRepeating("DataRecieve", 0.5f, 0.01f);
+            Time_ = System.DateTime.Now.ToString("_dd_MM_yyyy_HH_mm_ss");
+        }
+
+        public void Exit()
+        {
+            start = false;
+            CancelInvoke();
+        }
+
+        public void CloseSerialPort()
+        {
+            if (sp != null)
+            {
+                sp.Close();
             }
         }
-        else
+
+        public void GetComPort()
         {
-           Debug.Log("Wrong Data: " + Line);
-        }
-        SaveData(grasping_force.ToString("F2")+","+lifting_force.ToString("F2")+"\n",false);
-    }
-    #endregion
-
-    #region Buttons
-    string Time_;
-    public void Save_Statics()
-    {
-        start = true;
-        InvokeRepeating("DataRecieve", 0.5f, 0.01f);
-        Time_ = System.DateTime.Now.ToString("_dd_MM_yyyy_HH_mm_ss");
-    }
-
-    public void Exit()
-    {
-        start = false;
-        CancelInvoke();
-    }
-
-    public void CloseSerialPort()
-    {
-        if (sp != null)
-        {
-            sp.Close();
-        }
-    }
-
-    public void GetComPort()
-    {
-        if (sp != null)
-        {
-            sp.Close();
-        }
-        Initialize();
-    }
-
-    public void Verbose_Logging(string msg)
-    {
-        if (debug)
-        {
-            Debug.Log(msg);
-            DebugText.text = msg;
-        }
-    }
-    #endregion
-
-    #region Saving Data
-    void SaveData(string Data, bool Replace)
-    {
-        
-        string FileName = savedDataPath + "/" + "GR_" + Time_ + ".txt";
-
-        if (!File.Exists(FileName))
-        {
-            Directory.CreateDirectory(savedDataPath);
+            if (sp != null)
+            {
+                sp.Close();
+            }
+            Initialize();
         }
 
-        if (Replace)
+        public void Verbose_Logging(string msg)
         {
-            File.WriteAllText(FileName, Data);
+            if (debug)
+            {
+                Debug.Log(msg);
+                DebugText.text = msg;
+            }
         }
-        else
+        #endregion
+
+        #region Saving Data
+        void SaveData(string Data, bool Replace)
         {
-            File.AppendAllText(FileName, Data);
+
+            string FileName = savedDataPath + "/" + "GR_" + Time_ + ".txt";
+
+            if (!File.Exists(FileName))
+            {
+                Directory.CreateDirectory(savedDataPath);
+            }
+
+            if (Replace)
+            {
+                File.WriteAllText(FileName, Data);
+            }
+            else
+            {
+                File.AppendAllText(FileName, Data);
+            }
         }
-    }
-    #endregion
+        #endregion
 
 }
+
