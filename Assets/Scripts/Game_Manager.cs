@@ -14,10 +14,12 @@ public class Game_Manager : MonoBehaviour
     public GameObject Gameover;
     public GameObject Win;
     public GameObject Beat_Game;
+    private Data Dt;
 
     void Start()
     {
         player = GameObject.FindWithTag("Player");
+        Dt = GetComponent<Data>();
     }    
     
     public void Game()
@@ -57,15 +59,20 @@ public class Game_Manager : MonoBehaviour
     {
         if (!Win.activeInHierarchy)
         {
+            Dt.Exit();
             Gameover.SetActive(true);
             PC.GameEnd();
             player.SetActive(true);
+            Dt.SaveData(Dt.grasping_force.ToString("F2") + "," + Dt.lifting_force.ToString("F2") + "," + PC.score.ToString("F2") + "\n", false);
             Move();
         }        
     }
     public void Finish()
     {
+        Dt.Exit();
         PC.GameEnd();
+        Dt.SaveData(Dt.grasping_force.ToString("F2") + "," + Dt.lifting_force.ToString("F2") + "," + PC.score.ToString("F2") + "\n", false);
+
         if (Game_.value < 2)
         {
             Win.SetActive(true);
@@ -76,12 +83,13 @@ public class Game_Manager : MonoBehaviour
         {
             Beat_Game.SetActive(true);
             Invoke("Move", 1);
-        }                
+        } 
+        
     }
     public void Move()
     {
         
-        player.transform.position = new Vector3(-10.0f, 3.0f, 0f);
+        player.transform.position = new Vector3(-10.0f, 7.0f, 0f);
         PC = player.GetComponent<PlayerController>();
         PC.score = 0;
         PC.Score.text = "Score: 0";
