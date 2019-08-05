@@ -14,10 +14,12 @@ public class Game_Manager : MonoBehaviour
     public GameObject Gameover;
     public GameObject Win;
     public GameObject Beat_Game;
+    private Data Dt;
 
     void Start()
     {
         player = GameObject.FindWithTag("Player");
+        Dt = GetComponent<Data>();
     }    
     
     public void Game()
@@ -57,6 +59,7 @@ public class Game_Manager : MonoBehaviour
     {
         if (!Win.activeInHierarchy)
         {
+            Dt.Exit();
             Gameover.SetActive(true);
             PC.GameEnd();
             player.SetActive(true);
@@ -65,6 +68,7 @@ public class Game_Manager : MonoBehaviour
     }
     public void Finish()
     {
+        Dt.Exit();
         PC.GameEnd();
         if (Game_.value < 2)
         {

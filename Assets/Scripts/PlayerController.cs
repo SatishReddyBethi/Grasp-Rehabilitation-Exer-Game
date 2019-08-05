@@ -79,7 +79,7 @@ public class PlayerController : MonoBehaviour
                 }
                               
 
-                if (data.lifting_force > 0.2 && !InAir)
+                if (data.lifting_force > 0.5 && !InAir)
                 {
                     Thrust = thrust;
                 }
@@ -162,7 +162,7 @@ public class PlayerController : MonoBehaviour
     public void GameStart()
     {
         pause = false;
-        data.start_thing = true;
+        //data.start_thing = true;
         rb.gravityScale = 1;
         transform.localScale = new Vector3(.5f, .5f, 0);
         transform.position = new Vector3(-10.0f, 3.0f, 0f);        
@@ -170,7 +170,9 @@ public class PlayerController : MonoBehaviour
         timer = 3.0f;
         timer_.SetActive(true);
         particle.gameObject.SetActive(false);
+        data.Save_Statics();
     }
+
     public void GameEnd()
     {
         pause = true;
@@ -180,6 +182,7 @@ public class PlayerController : MonoBehaviour
             coin.SetActive(true);
         }
         rb.velocity = new Vector3(0f, 0f, 0f);
+        data.Exit();
     }
     void Timer()
     {
