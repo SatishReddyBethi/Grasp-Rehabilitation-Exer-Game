@@ -18,17 +18,26 @@ public class Data : MonoBehaviour
     public float lifting_force;
     public float grasping_force;
     public float initial_lf;
+    public float saved_lf;
+    public float saved_gf;
+    public float lfr;
+    public float gfr;
     public bool start_thing = false;
-    
+    public string score_thing = "";
+    public bool Jump;
+    public int jump_iteration;
+    public int Data_Iteration;
+    public float timer;
+
     // Use this for initialization
     void Start()
     {
         savedDataPath = Application.persistentDataPath + "/savedData";
         Time.timeScale = 1;
         Scan();
-        GetComPort();
+        GetComPort();        
         //Invoke("Save_Statics", 2.0f);
-        
+
     }
 
     #region Code Connecting With Arduino
@@ -118,7 +127,6 @@ public class Data : MonoBehaviour
                 {
                     Hts = ts;
                 }
-
             }
             else
             {
@@ -170,6 +178,7 @@ public class Data : MonoBehaviour
 
     public void ParseAngles()
     {
+        lifting_force = 0f;
         bool ReadStatus = true;
         string[] forces = Line.Split(',');
         if (forces.Length == 3)
@@ -206,12 +215,14 @@ public class Data : MonoBehaviour
                             {
                                 lifting_force = 0;
                             }
+                            Data_Iteration += 1;
                         }
                     }                    
 
                     if (TempGF > 0 && TempGF < 26)
                     {
                         grasping_force = TempGF;
+                        
                     }
                 }
                 catch (System.FormatException)
@@ -225,12 +236,42 @@ public class Data : MonoBehaviour
             {
                 Debug.Log("Wrong Data: " + Line);
             }
-            SaveData(grasping_force.ToString("F2") + "," + lifting_force.ToString("F2") + "\n", false);
+            timer += Time.deltaTime;
+            lfr = (lifting_force - saved_lf) / Time.deltaTime;
+            gfr = (grasping_force - saved_gf) / Time.deltaTime;            
+            SaveData(timer.ToString("F2") + "," + grasping_force.ToString("F2") + "," + lifting_force.ToString("F2") + "," + lfr.ToString("F2") + "," + gfr.ToString("F2") + "\n", false);
+            saved_lf = lifting_force;
+            saved_gf = grasping_force;
         }
+
+        if (Data_Iteration > 100)
+        {
+            jump_iteration = 0;
+            Data_Iteration = 0;
+        }
+        if(lifting_force > 1.0f)
+        {
+            jump_iteration += 1;
+        }
+
+        if (jump_iteration > 10)
+        {
+            jump_iteration = 0;
+            Jump = true;
+            Debug.Log("Jump");
+        }
+        else
+        {
+            Jump = false;
+        }        
+    }
+    public void Flush()
+    {
+        sp.BaseStream.Flush();
     }
         #endregion
 
-        #region Buttons
+    #region Buttons
         string Time_;
         public void Save_Statics()
         {
@@ -276,8 +317,8 @@ public class Data : MonoBehaviour
         }
         #endregion
 
-        #region Saving Data
-        void SaveData(string Data, bool Replace)
+    #region Saving Data
+        public void SaveData(string Data, bool Replace)
         {
 
             string FileName = savedDataPath + "/" + "GR_" + Time_ + ".txt";
