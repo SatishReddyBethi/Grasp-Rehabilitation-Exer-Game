@@ -22,14 +22,15 @@ public class PlayerController : MonoBehaviour
     public Text timerText;
     public GameObject timer_;
     public GameObject particle;
-    private ParticleSystem exp; 
+    private ParticleSystem exp;
+    public Slider slider;
     
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        transform.position = new Vector3(-10.0f, 3.0f, 0f);
-        transform.localScale = new Vector3(.5f, .5f, 1f);
+        transform.position = new Vector3(-10.0f, 7.0f, 0f);
+        transform.localScale = new Vector3(.75f, .75f, 1f);
         rb.gravityScale = 0;
         manager = GameObject.FindWithTag("GAME MANAGER");
         GM = manager.GetComponent<Game_Manager>();
@@ -53,20 +54,24 @@ public class PlayerController : MonoBehaviour
         else
         {
             Timer();
+            if(timer == 2)
+            {
+                data.Flush();
+            }
             if (timer <= 0)
             {
                 timer_.SetActive(false);
                 float speed = 0f;
                 float Thrust = 0f;
-                
 
+                slider.value = data.grasping_force;
                 if (data.grasping_force < 20)
                 {
                     float prop_size = (data.grasping_force * 0.05f);
                     transform.localScale = new Vector3(prop_size + .5f, prop_size + .75f, 0);
                 }
 
-                if (data.grasping_force >= 20)
+                if (data.grasping_force >= 20 && GM.Levels[2].activeInHierarchy)
                 {
                     particle.transform.position = transform.position;
                     rb.velocity = new Vector3(0f, 0f, 0f);
@@ -76,14 +81,13 @@ public class PlayerController : MonoBehaviour
                     exp.Play();
                     
                     GM.Invoke("GameOver", 1);
-                }
-                              
+                }                             
 
-                if (data.lifting_force > 0.5 && !InAir)
+                if ((data.Jump || Input.GetKeyDown("space"))&& !InAir )
                 {
                     Thrust = thrust;
                 }
-
+                
                 else
                 {
                     Thrust = rb.velocity.y;
@@ -137,7 +141,7 @@ public class PlayerController : MonoBehaviour
         {
             foreach(var ContactPoint in col.contacts)
             {
-                if(Mathf.Abs(transform.position.x - ContactPoint.point.x) < 0.1f)
+                if(Mathf.Abs(transform.position.x - ContactPoint.point.x) < 0.3f)
                 {
                     InAir = false;
                 }
@@ -157,6 +161,11 @@ public class PlayerController : MonoBehaviour
             other.gameObject.SetActive(false);
             PointAdd();
         }
+        if (other.gameObject.CompareTag("Up"))
+        {
+            other.gameObject.SetActive(false);
+            transform.position = new Vector3(transform.position.x, 8.0f, 0f);
+        }
     }
 
     public void GameStart()
@@ -165,10 +174,13 @@ public class PlayerController : MonoBehaviour
         //data.start_thing = true;
         rb.gravityScale = 1;
         transform.localScale = new Vector3(.5f, .5f, 0);
-        transform.position = new Vector3(-10.0f, 3.0f, 0f);        
+        transform.position = new Vector3(-10.0f, 7.0f, 0f);        
         coins = GameObject.FindGameObjectsWithTag("Coin");
+        data.timer = 0;
         timer = 3.0f;
         timer_.SetActive(true);
+        score = 0;
+        Score.text = "Score: 0";
         particle.gameObject.SetActive(false);
         data.Save_Statics();
     }
@@ -176,6 +188,7 @@ public class PlayerController : MonoBehaviour
     public void GameEnd()
     {
         pause = true;
+        data.start_thing = true;
         rb.gravityScale = 0;
         foreach(GameObject coin in coins)
         {
@@ -189,4 +202,5 @@ public class PlayerController : MonoBehaviour
         timer -= Time.deltaTime;
         timerText.text = timer.ToString("0");
     }
+    
 }

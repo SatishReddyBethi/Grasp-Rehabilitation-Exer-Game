@@ -15,6 +15,7 @@ public class Game_Manager : MonoBehaviour
     public GameObject Win;
     public GameObject Beat_Game;
     private Data Dt;
+    public Text message;
 
     void Start()
     {
@@ -32,16 +33,19 @@ public class Game_Manager : MonoBehaviour
                 Levels[0].SetActive(true);
                 Levels[1].SetActive(false);
                 Levels[2].SetActive(false);
+                message.text = "Try and keep the tab in the green! If you are squeezing too much it will go into the red.";
                 break;
             case 1:
                 Levels[0].SetActive(false);
                 Levels[1].SetActive(true);
                 Levels[2].SetActive(false);
+                message.text = "Careful! You can now fall through the floor!";
                 break;
             case 2:
                 Levels[0].SetActive(false);
                 Levels[1].SetActive(false);
                 Levels[2].SetActive(true);
+                message.text = "Careful! If you squeeze too much your character will explode!";
                 break;
         }
     }
@@ -63,6 +67,7 @@ public class Game_Manager : MonoBehaviour
             Gameover.SetActive(true);
             PC.GameEnd();
             player.SetActive(true);
+            Dt.SaveData(Dt.grasping_force.ToString("F2") + "," + Dt.lifting_force.ToString("F2") + "," + PC.score.ToString("F2") + "\n", false);
             Move();
         }        
     }
@@ -70,6 +75,8 @@ public class Game_Manager : MonoBehaviour
     {
         Dt.Exit();
         PC.GameEnd();
+        Dt.SaveData(Dt.grasping_force.ToString("F2") + "," + Dt.lifting_force.ToString("F2") + "," + PC.score.ToString("F2") + "\n", false);
+
         if (Game_.value < 2)
         {
             Win.SetActive(true);
@@ -80,12 +87,13 @@ public class Game_Manager : MonoBehaviour
         {
             Beat_Game.SetActive(true);
             Invoke("Move", 1);
-        }                
+        } 
+        
     }
     public void Move()
     {
         
-        player.transform.position = new Vector3(-10.0f, 3.0f, 0f);
+        player.transform.position = new Vector3(-10.0f, 7.0f, 0f);
         PC = player.GetComponent<PlayerController>();
         PC.score = 0;
         PC.Score.text = "Score: 0";
